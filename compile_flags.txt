@@ -1,0 +1,2 @@
+-IC:/llvm-8.0.0.src/include
+-std=gnu++17

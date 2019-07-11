@@ -1,0 +1,34 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build with Debug",
+            "type": "shell",
+            "command": "clang++.exe",
+            "args": [
+                "-target",
+                "x86_64-pc-windows-gnu",
+                "-g",
+                "main.cpp",
+                "-o",
+                "./bin/main.exe",
+                "-I",
+                "C:/llvm-8.0.0.src/include",
+                "-std=gnu++17",
+                "-fno-exceptions",
+                "-fno-rtti",
+                "-D_DEBUG",
+                "-D_FILE_OFFSET_BITS=64",
+                "-D__STDC_CONSTANT_MACROS",
+                "-D__STDC_FORMAT_MACROS",
+                "-D__STDC_LIMIT_MACROS"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
