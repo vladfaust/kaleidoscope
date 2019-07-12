@@ -6,21 +6,24 @@
 using namespace std;
 
 class Lexer {
+  FILE *_input;
   string _identifier_string;
   double _number_value;
   int _current_token;
+  int _last_char = ' ';
 
 public:
   enum Token {
     Eof = -1,
+    Newline = -2,
 
     // commands
-    Def = -2,
-    Extern = -3,
+    Def = -3,
+    Extern = -4,
 
     // primary
-    Identifier = -4,
-    Number = -5,
+    Identifier = -5,
+    Number = -6,
   };
 
   double number_value() { return _number_value; };
@@ -29,18 +32,21 @@ public:
 
   int consume_token() { return _current_token = get_token(); };
 
+  Lexer(FILE *input) : _input(input) {}
+  void reset() { _last_char = ' '; }
+
 private:
+  int read_char() { return fgetc(_input); }
+
   int get_token() {
-    static int __last_char = ' ';
+    while (isspace(_last_char) && _last_char != '\n')
+      _last_char = read_char();
 
-    while (isspace(__last_char))
-      __last_char = getchar();
+    if (isalpha(_last_char)) {
+      _identifier_string = _last_char;
 
-    if (isalpha(__last_char)) {
-      _identifier_string = __last_char;
-
-      while (isalnum((__last_char = getchar())))
-        _identifier_string += __last_char;
+      while (isalnum((_last_char = read_char())))
+        _identifier_string += _last_char;
 
       if (_identifier_string == "def")
         return Token::Def;
@@ -50,33 +56,36 @@ private:
       return Token::Identifier;
     }
 
-    if (isdigit(__last_char) || __last_char == '.') {
+    if (isdigit(_last_char) || _last_char == '.') {
       string NumString;
 
       do {
-        NumString += __last_char;
-        __last_char = getchar();
-      } while (isdigit(__last_char) || __last_char == '.');
+        NumString += _last_char;
+        _last_char = read_char();
+      } while (isdigit(_last_char) || _last_char == '.');
 
       _number_value = strtod(NumString.c_str(), 0);
       return Token::Number;
     }
 
-    if (__last_char == '#') {
+    if (_last_char == '#') {
       do
-        __last_char = getchar();
-      while (__last_char != EOF && __last_char != '\n' && __last_char != '\r');
+        _last_char = read_char();
+      while (_last_char != EOF && _last_char != '\n' && _last_char != '\r');
 
-      if (__last_char != EOF)
+      if (_last_char != EOF)
         return get_token();
     }
 
-    if (__last_char == EOF)
+    if (_last_char == '\n')
+      return Token::Newline;
+
+    if (_last_char == EOF)
       return Token::Eof;
 
-    int ThisChar = __last_char;
-    __last_char = getchar(); // Move cursor to the next char
+    int this_char = _last_char;
+    _last_char = read_char(); // Move cursor to the next char
 
-    return ThisChar;
+    return this_char;
   };
 };

@@ -2,16 +2,24 @@
 
 #include "./lexer.cpp"
 #include "./parser.cpp"
-
-// AST
-#include "./ast/expression/number.cpp"
-#include "./ast/expression/variable.cpp"
+#include "./repl.cpp"
 
 int main() {
-  Lexer lexer;
-  Parser parser(&lexer);
+  Parser::binop_precedence()->insert_or_assign('>', 10);
+  Parser::binop_precedence()->insert_or_assign('+', 20);
+  Parser::binop_precedence()->insert_or_assign('-', 20);
+  Parser::binop_precedence()->insert_or_assign('*', 40);
 
-  while (true) {
-    auto exp = parser.parse_number_expression();
-  }
+  // FILE *input;
+  // fopen_s(&input, "input.txt", "r");
+
+  Lexer lexer(stdin);
+  Parser parser(&lexer);
+  REPL repl(&parser);
+
+  repl.loop();
+
+  // fclose(input);
+
+  return 0;
 };

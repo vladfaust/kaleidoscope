@@ -10,7 +10,11 @@
             "request": "launch",
             "target": "./bin/main.exe",
             "cwd": "${workspaceRoot}",
-            "valuesFormatting": "parseText"
+            "valuesFormatting": "parseText",
+            "terminal": "",
+            "preLaunchTask": "Build with Debug",
+            "printCalls": true,
+            "showDevDebugOutput": true
         }
     ]
 }
