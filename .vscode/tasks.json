@@ -21,13 +21,10 @@
                 "-o",
                 "./bin/main.exe",
                 {
-                    "value": "$($(llvm-config --ldflags --libs x86 codegen).split())",
+                    "value": "$($(llvm-config --ldflags --libs --system-libs core).split())",
                     "quoting": "weak"
                 },
-                "-LC:/Progra~1/mingw-w64/mingw64/x86_64-w64-mingw32/lib",
-                "-lpthread",
-                "-lole32",
-                "-luuid"
+                "-lpthread" // For some reason it's absent in --system-libs 🤔
             ],
             "group": {
                 "kind": "build",
