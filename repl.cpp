@@ -5,7 +5,6 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include "./codegen.cpp"
-#include "./context.cpp"
 #include "./parser.cpp"
 
 using namespace std;

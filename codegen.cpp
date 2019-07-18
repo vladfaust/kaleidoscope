@@ -15,7 +15,6 @@
 #include "./ast/expression/number.cpp"
 #include "./ast/expression/variable.cpp"
 #include "./ast/function.cpp"
-#include "./context.cpp"
 
 using namespace std;
 mutex m;
