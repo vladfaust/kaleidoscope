@@ -10,11 +10,18 @@
             "request": "launch",
             "target": "./bin/main.exe",
             "cwd": "${workspaceRoot}",
-            "valuesFormatting": "parseText",
+            "valuesFormatting": "prettyPrinters",
             "terminal": "",
-            "preLaunchTask": "Build with Debug",
-            "printCalls": true,
-            "showDevDebugOutput": true
-        }
+        },
+        {
+            "name": "Debug w/ Build",
+            "type": "gdb",
+            "request": "launch",
+            "target": "./bin/main.exe",
+            "cwd": "${workspaceRoot}",
+            "valuesFormatting": "prettyPrinters",
+            "terminal": "",
+            "preLaunchTask": "Build with Debug"
+        },
     ]
 }

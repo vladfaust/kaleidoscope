@@ -1,11 +1,30 @@
-#include "./parser.cpp"
 #include <cstdio>
+#include <iostream>
+
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/Support/raw_ostream.h"
+
+#include "./codegen.cpp"
+#include "./context.cpp"
+#include "./parser.cpp"
+
+using namespace std;
 
 class REPL {
   Parser *_parser;
 
+  unique_ptr<llvm::LLVMContext> _context;
+  unique_ptr<llvm::Module> _module;
+  unique_ptr<Codegen> _codegen;
+  unique_ptr<llvm::IRBuilder<>> _builder;
+
 public:
-  REPL(Parser *parser) : _parser(parser) {}
+  REPL(Parser *parser) : _parser(parser) {
+    _context = std::make_unique<llvm::LLVMContext>();
+    _builder = std::make_unique<llvm::IRBuilder<>>(*_context);
+    _module = std::make_unique<llvm::Module>("REPL", *_context);
+    _codegen = std::make_unique<Codegen>(Codegen(_context.get(), _module.get(), _builder.get()));
+  }
 
   void loop() {
     int await = 1;
@@ -42,8 +61,12 @@ public:
 
 private:
   void handle_def() {
-    if (_parser->parse_function_definition()) {
-      fprintf(stdout, "Parsed a function definition\n");
+    if (auto node = _parser->parse_function_definition()) {
+      if (auto *ir = _codegen.get()->gen(node.get())) {
+        fprintf(stdout, "Read function definition:");
+        ir->print(llvm::outs());
+        fprintf(stdout, "\n");
+      }
     } else {
       // That's a error, skip one token
       _parser->lexer()->consume_token();
@@ -51,8 +74,12 @@ private:
   }
 
   void handle_extern() {
-    if (_parser->parse_extern()) {
-      fprintf(stdout, "Parsed an extern\n");
+    if (auto node = _parser->parse_extern()) {
+      if (auto *ir = _codegen->gen(node.get())) {
+        fprintf(stdout, "Read extern:");
+        ir->print(llvm::outs());
+        fprintf(stdout, "\n");
+      }
     } else {
       // That's a error, skip one token
       _parser->lexer()->consume_token();
@@ -60,8 +87,12 @@ private:
   }
 
   void handle_top_level_expression() {
-    if (_parser->parse_top_level_expression()) {
-      fprintf(stdout, "Parsed a top-level expression\n");
+    if (auto node = _parser->parse_top_level_expression()) {
+      if (auto *ir = _codegen->gen(node.get())) {
+        fprintf(stdout, "Read top-level expression:");
+        ir->print(llvm::outs());
+        fprintf(stdout, "\n");
+      }
     } else {
       // That's a error, skip one token
       _parser->lexer()->consume_token();

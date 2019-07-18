@@ -11,9 +11,10 @@ class Prototype {
   vector<string> _args;
 
 public:
+  const string &name() const { return _name; };
+  vector<string> args() { return _args; };
+
   Prototype(const string &name, vector<string> args)
       : _name(name), _args(move(args)) {}
-
-  const string &get_name() const { return _name; }
 };
 } // namespace AST

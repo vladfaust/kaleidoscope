@@ -6,24 +6,28 @@
         {
             "label": "Build with Debug",
             "type": "shell",
-            "command": "clang++.exe",
+            "command": "clang++",
             "args": [
                 "-target",
-                "x86_64-pc-windows-gnu",
+                "x86_64-unknown-windows-gnu",
+                "-fuse-ld=lld",
                 "-g",
+                {
+                    "value": "$($(llvm-config --cxxflags).split())",
+                    "quoting": "weak"
+                },
+                "--std=gnu++17",
                 "main.cpp",
                 "-o",
                 "./bin/main.exe",
-                "-I",
-                "C:/llvm-8.0.0.src/include",
-                "-std=gnu++17",
-                "-fno-exceptions",
-                "-fno-rtti",
-                "-D_DEBUG",
-                "-D_FILE_OFFSET_BITS=64",
-                "-D__STDC_CONSTANT_MACROS",
-                "-D__STDC_FORMAT_MACROS",
-                "-D__STDC_LIMIT_MACROS"
+                {
+                    "value": "$($(llvm-config --ldflags --libs x86 codegen).split())",
+                    "quoting": "weak"
+                },
+                "-LC:/Progra~1/mingw-w64/mingw64/x86_64-w64-mingw32/lib",
+                "-lpthread",
+                "-lole32",
+                "-luuid"
             ],
             "group": {
                 "kind": "build",

@@ -5,10 +5,11 @@
 namespace AST {
 namespace Expression {
 class Number : public Base {
-  double Val;
+  double _value;
 
 public:
-  Number(double Val) : Val(Val) {}
+  Number(double Val) : _value(Val) {}
+  double value() const { return _value; }
 };
 } // namespace Expression
 } // namespace AST
