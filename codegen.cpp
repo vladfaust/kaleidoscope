@@ -1,11 +1,11 @@
 #pragma once
 
 #include <memory>
-#include <mutex>
 #include <vector>
 
 #include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Value.h"
 #include "llvm/IR/Verifier.h"
@@ -17,12 +17,12 @@
 #include "./ast/function.cpp"
 
 using namespace std;
-mutex m;
 
 class Codegen {
   llvm::LLVMContext *_context;
   llvm::Module *_module;
   llvm::IRBuilder<> *_builder;
+  llvm::legacy::FunctionPassManager *_fpm;
 
   map<string, llvm::Value *> _named_values;
 
@@ -32,8 +32,8 @@ public:
     return nullptr;
   }
 
-  Codegen(llvm::LLVMContext *context, llvm::Module *module, llvm::IRBuilder<> *builder)
-      : _context(context), _module(module), _builder(builder) {}
+  Codegen(llvm::LLVMContext *context, llvm::Module *module, llvm::IRBuilder<> *builder, llvm::legacy::FunctionPassManager *fpm)
+      : _context(context), _module(module), _builder(builder), _fpm(fpm) {}
 
   // Generate base expression IR.
   // It automatically determines which derived type the expression node is.
@@ -131,7 +131,10 @@ public:
 
     if (llvm::Value *return_value = gen(node->body())) {
       _builder->CreateRet(return_value);
+
       llvm::verifyFunction(*function);
+      _fpm->run(*function);
+
       return function;
     }
 
